@@ -11,7 +11,7 @@ fn verify_message(account: String, message: String, signature: String) -> bool {
 
 fn verify_message_p(account: String, message: String, signature: String) -> Result<bool> {
     let eth_message = eth_message(message);
-    let decoded_signature = hex::decode(signature)?;
+    let decoded_signature = hex::decode(signature.trim_start_matches("0x"))?;
     let pubkey = recover(&eth_message, &decoded_signature[..64], 0)?;
     let pubkey = format!("{:02X?}", pubkey);
     Ok(account == pubkey)
