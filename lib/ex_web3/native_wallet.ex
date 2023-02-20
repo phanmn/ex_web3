@@ -1,4 +1,5 @@
 defmodule ExWeb3.NativeWallet do
+  @moduledoc false
   use Rustler, otp_app: :ex_web3, crate: :wallet
 
   def verify_message(_, _, _), do: error()
