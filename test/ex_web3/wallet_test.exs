@@ -21,5 +21,15 @@ defmodule ExWeb3.WalletTest do
 
       assert true == ExWeb3.Wallet.validate_message?(account, message, signature)
     end
+
+    test "true 2" do
+      account = "0xff04a32e264e9405a38938ee4966e0ae4f16a703"
+      message = "000632"
+
+      signature =
+        "0x0f0d835f8f1fce0e082eaa6bafbf7e7da860824b6abb94846c8b0785509e5d1d101a0cf885b0b0c99d35ed191874f6db5c5377f055084a0e38e99710601ecc9d1c"
+
+      assert true == ExWeb3.Wallet.validate_message?(account, message, signature)
+    end
   end
 end

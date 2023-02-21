@@ -1,5 +1,6 @@
+use std::str::FromStr;
 use anyhow::Result;
-use web3::signing::{keccak256, recover};
+use ethers::prelude::{Address, Signature};
 
 #[rustler::nif]
 fn validate_message(account: String, message: String, signature: String) -> bool {
@@ -9,24 +10,11 @@ fn validate_message(account: String, message: String, signature: String) -> bool
     }
 }
 
-fn validate_message_p(account: String, message: String, signature: String) -> Result<bool> {
-    let eth_message = eth_message(message);
-    let decoded_signature = hex::decode(signature.trim_start_matches("0x"))?;
-    let pubkey = recover(&eth_message, &decoded_signature[..64], 0)?;
-    let pubkey = format!("{:02X?}", pubkey);
-    Ok(account == pubkey)
-}
-
-pub fn eth_message(message: String) -> [u8; 32] {
-    keccak256(
-        format!(
-            "{}{}{}",
-            "\x19Ethereum Signed Message:\n",
-            message.len(),
-            message
-        )
-        .as_bytes(),
-    )
+fn validate_message_p(address_str: String, message: String, signature_str: String) -> Result<bool> {
+    let address = Address::from_str(&address_str.trim_start_matches("0x"))?;
+    let signature = Signature::from_str(&signature_str.trim_start_matches("0x"))?;
+    let pubkey = signature.recover(message)?;
+    Ok(address == pubkey)
 }
 
 rustler::init!("Elixir.ExWeb3.NativeWallet", [validate_message]);
